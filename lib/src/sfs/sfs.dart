@@ -56,25 +56,12 @@ class SfsCal {
 
   late Size _scrMin;
   late Size _scrMax;
-  late Size _scrCurr;
   late double _scrWidthPeg;
-  late double _scrHeightPeg;
 
   ///
   initRun() {
     _scrMin = sizeRange!.screenMinSize ?? defaultMinScrSize;
     _scrMax = sizeRange!.screenMaxSize ?? defaultMaxScrSize;
-    _scrCurr = sizeRange!.screenSize == null
-        ? defaultFixedScrSize
-        : sizeRange!.screenSize!;
-
-    /// Calculate Screen width percentage
-    _scrWidthPeg = ((_scrCurr.width - _scrMin.width) * 100) /
-        (_scrMax.width - _scrMin.width);
-
-    /// Calculate Screen height percentage
-    _scrHeightPeg = ((_scrCurr.height - _scrMin.height) * 100) /
-        (_scrMax.height - _scrMin.height);
   }
 
   double _fontSize(double size, double scr) {
@@ -127,35 +114,6 @@ class SfsCal {
     double newScrPegX = scrPegX + extra;
 
     /// Return new generated font size according to font range (fontSizeRange [Size]) and screen size (screenSize [Range])
-    if (newScrPegX >= 1 && newScrPegX <= 100) {
-      return (((max - min) * newScrPegX) / 100) + min;
-    } else {
-      return newScrPegX <= 1 ? min : max;
-    }
-  }
-
-  ///
-  double _calculateWidget(double widthSize, double width, Range range,
-      {bool wd = true}) {
-    //
-    double min = range.min;
-    double max = range.max;
-    double currentSize = widthSize;
-
-    /// Calculate percentage
-    double sizePeg = ((currentSize - min) * 100) / (max - min);
-    //
-    double extra = sizePeg - (wd ? _scrWidthPeg : _scrHeightPeg);
-    //
-    double newScrPeg = (wd ? _scrWidthPeg : _scrHeightPeg) + extra;
-
-    //
-    double scrPegX = ((width - (wd ? _scrMin.width : _scrMin.height)) * 100) /
-        ((wd ? _scrMax.width : _scrMax.height) -
-            (wd ? _scrMin.width : _scrMin.height));
-    double newScrPegX = scrPegX + extra;
-
-    /// Return new generated font size according to size range (fontSizeRange [Size]) and screen size (screenSize [Range])
     if (newScrPegX >= 1 && newScrPegX <= 100) {
       return (((max - min) * newScrPegX) / 100) + min;
     } else {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../flutter_sfs.dart';
+import 'package:flutter_sfs/src/utils.dart';
 
 Size defaultMinScrSize = const Size(350, 650);
 Size defaultMaxScrSize = const Size(920, 1024);
@@ -56,12 +55,20 @@ class SfsCal {
 
   late Size _scrMin;
   late Size _scrMax;
+  late Size _scrCurr; //-m
   late double _scrWidthPeg;
 
   ///
   initRun() {
     _scrMin = sizeRange!.screenMinSize ?? defaultMinScrSize;
     _scrMax = sizeRange!.screenMaxSize ?? defaultMaxScrSize;
+    _scrCurr = sizeRange!.screenSize == null
+        ? defaultFixedScrSize
+        : sizeRange!.screenSize!;
+
+    /// Calculate Screen width percentage
+    _scrWidthPeg = ((_scrCurr.width - _scrMin.width) * 100) /
+        (_scrMax.width - _scrMin.width);
   }
 
   double _fontSize(double size, double scr) {
@@ -105,10 +112,8 @@ class SfsCal {
     double widthPeg = ((currentSize - min) * 100) / (max - min);
     //
     double extra = widthPeg - _scrWidthPeg;
-    //
     // double newScrPeg = _scrWidthPeg + extra;
 
-    //
     double scrPegX =
         ((width - _scrMin.width) * 100) / (_scrMax.width - _scrMin.width);
     double newScrPegX = scrPegX + extra;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../flutter_sfs.dart';
+import 'package:flutter_sfs/flutter_sfs.dart';
 
 typedef RebuildFactor = bool Function(
     MediaQueryData oldMediaQueryData, MediaQueryData newMediaQueryData);

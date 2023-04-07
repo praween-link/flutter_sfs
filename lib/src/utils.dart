@@ -4,14 +4,23 @@ import 'navigator_service.dart';
 import 'sfs/sfs.dart';
 
 /// Globle build context [sfsContext]
-BuildContext get sfsContext => NavigationService.navigatorKey.currentContext!;
+sfsCtx() {
+  try {
+    return NavigationService.navigatorKey.currentContext!;
+  } catch (e) {
+    throw Exception(
+        "Required to add sfsNavigatorKey in MaterialApp (navigatorKey: sfsNavigatorKey),");
+  }
+}
+
+BuildContext get sfsContext => sfsCtx();
 double get sfsWidth => MediaQuery.of(sfsContext).size.width;
 double get sfsHeight => MediaQuery.of(sfsContext).size.height;
 
 /// GlobalKey NavigatorState
 GlobalKey<NavigatorState> get sfsNavigatorKey => NavigationService.navigatorKey;
 
-/// Font size default extension [fs] 
+/// Font size default extension [fs]
 /// Font size with key extension [fsKey]
 extension FontSizeExtension on num {
   double get fs => SFS.font(this);

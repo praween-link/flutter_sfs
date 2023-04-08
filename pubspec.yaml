@@ -1,7 +1,7 @@
 name: flutter_sfs
 description: Manage your Text font size in range(minimum to maximum), according to device screen size. 
 version: 0.1.1
-homepage: https://github.com/praween-link/screen-font-size
+homepage: https://github.com/praween-link/flutter_sfs
 auther: Praween Kumar
 
 environment:

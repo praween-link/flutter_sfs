@@ -11,3 +11,8 @@
 ## 0.1.1
 
 * Issue fixed
+
+## 0.2.0
+
+* Add new functionality to easy to define text size and range for tablate and desktop also.
+* fontSize: 16.fs('m', t: 18, d: 22)

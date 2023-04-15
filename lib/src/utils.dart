@@ -20,11 +20,17 @@ double get sfsHeight => MediaQuery.of(sfsContext).size.height;
 /// GlobalKey NavigatorState
 GlobalKey<NavigatorState> get sfsNavigatorKey => NavigationService.navigatorKey;
 
-/// Font size default extension [fs]
-/// Font size with key extension [fsKey]
 extension FontSizeExtension on num {
-  double get fs => SFS.font(this);
+  /// Font size default extension [fs], it's provides responsive font size, according to fontSizeRange of [SfsInitBuilder] builder.
+  double get s => SFS.font(this);
+
+  /// Font size with key extension [fsKey], helps access custom-created [multiFontSizeRange] font size by passing the key.
   double fsKey(String k) => SFS.fontK(k, this);
+
+  /// Font size with key extension [font], if you want to also define text size for Desktop and Tablet, you can pass for all text sizes by [fontMulti] extension.
+  /// t: for Tablet
+  double fs(String k, {double? t, double? d}) =>
+      SFS.fontMulti(k, this, t: t, d: d);
 }
 
 /// Without range
@@ -39,11 +45,16 @@ class SizeRange {
   final Size? screenMaxSize;
 
   /// * Fixed screen size [screenSize]
-  final Size? screenSize;
+  final Size? mobileSize;
+  final Size? tabletSize;
+  final Size? desktopSize;
 
   /// * Minimum and Maximum font size [fontSizeRange]
   final Range? fontSizeRange;
   final Map<String, Range>? multiFontSizeRange;
+
+  /// Range Divder for Mobile, Tablete, and Desktop
+  final DivideRange? divideRange;
 
   /// * Card range
   // final CardRange? cardWidgetRange;
@@ -52,10 +63,13 @@ class SizeRange {
   SizeRange({
     this.screenMinSize,
     this.screenMaxSize,
-    this.screenSize,
+    this.mobileSize,
+    this.tabletSize,
+    this.desktopSize,
     this.fontSizeRange,
     this.multiFontSizeRange,
     // this.cardWidgetRange,
+    this.divideRange,
   });
 }
 
@@ -69,4 +83,12 @@ class CardRange {
   final Range width;
   final Range height;
   CardRange({required this.width, required this.height});
+}
+
+// Range Divder for Mobile, Tablete, and Desktop
+class DivideRange {
+  final Range? pergMob; // for mobile
+  final Range? pergTab; // for tablet
+  final Range? pergDesk; // for desktop
+  DivideRange({this.pergMob, this.pergTab, this.pergDesk});
 }

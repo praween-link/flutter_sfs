@@ -12,15 +12,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfsInitBuilder(
-      screenSize: const Size(360, 650),
-      fontSizeRange: Range(min: 8, max: 22),
+      mobileSize: const Size(360, 650),
+      tabletSize: const Size(481, 890),
+      desktopSize: const Size(360, 650),
+      fontSizeRange: Range(min: 10, max: 22),
       multiFontSizeRange: {
-        's': Range(min: 6, max: 12), // Small text size
-        'n': Range(min: 10, max: 16), // Normal text size
-        'm': Range(min: 12, max: 18), // Medium text size
-        'h': Range(min: 12, max: 24), // Header text size
-        'btn': Range(min: 14, max: 22), // Button text size
+        's': Range(min: 8, max: 18), // Small text size
+        'n': Range(min: 14, max: 24), // Normal text size
+        'm': Range(min: 16, max: 26), // Medium text size
+        'h': Range(min: 16, max: 28), // Header text size
+        'btn': Range(min: 14, max: 24), // Button text size
       },
+      divideRange: DivideRange(
+        // Divided range for mobile
+        pergMob: Range(min: 0.0, max: 60.0), // %
+        // Divided range for tablet
+        pergTab: Range(min: 20.0, max: 80.0), // %
+        // Divided range for desktop
+        pergDesk: Range(min: 35.0, max: 100.0), // %
+      ),
       builder: (context, child) {
         return MaterialApp(
           navigatorKey: sfsNavigatorKey,
@@ -49,16 +59,20 @@ class HomeScreen extends StatelessWidget {
           const Divider(),
           Text(
             "Default text size",
-            style: TextStyle(fontSize: 18.fs),
+            style: TextStyle(fontSize: 18.5.s),
           ),
           const Divider(),
           Text(
             "Small text size",
-            style: TextStyle(fontSize: 12.fsKey('s')),
+            style: TextStyle(fontSize: 12.fs('s')),
           ),
           Text(
             "Normal text size",
-            style: TextStyle(fontSize: 14.fsKey('n')),
+            style: TextStyle(fontSize: 14.fs('n', t: 14, d: 16)),
+          ),
+          Text(
+            "Medium text size",
+            style: TextStyle(fontSize: 16.fs('m')),
           ),
           Text(
             "Medium text size",
@@ -66,7 +80,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Text(
             "Header text size",
-            style: TextStyle(fontSize: 16.fsKey('h')),
+            style: TextStyle(fontSize: 16.fsKey('hl')),
           ),
           const Divider(),
           ElevatedButton(

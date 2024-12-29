@@ -19,7 +19,7 @@ class SFS {
   static double font(num s) {
     if (_sizeRange != null) {
       double newSize =
-          _fsc._fontSize(s.toDouble(), MediaQuery.of(sfsContext).size.width);
+          _fsc._fontSize(s.toDouble(), mq?.size.width ?? 0.0);
       return newSize;
     } else {
       // handle the exception here
@@ -34,7 +34,7 @@ class SFS {
           _sizeRange!.multiFontSizeRange![k] != null) {
         double newSize = _fsc._fontSizeKey(
             s.toDouble(),
-            MediaQuery.of(sfsContext).size.width,
+            mq?.size.width ?? 0.0,
             k,
             Range(min: 100.0, max: 100.0));
         return newSize;
@@ -62,7 +62,7 @@ class SFS {
           _sizeRange!.multiFontSizeRange![k] != null) {
         double newSize = _fsc._fontSizeKey(
             newFont,
-            MediaQuery.of(sfsContext).size.width,
+            mq?.size.width ?? 0.0,
             k,
             Range(min: 100.0, max: 100.0));
         return newSize;
@@ -214,7 +214,7 @@ class SfsCal {
   }
 
   String _currentScreenType() {
-    double width = MediaQuery.of(sfsContext).size.width;
+    double width = mq?.size.width ?? 0.0;
     if (width <= 1080 && width >= 720) {
       return 't';
     } else if (width > 1080) {

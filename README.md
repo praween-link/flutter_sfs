@@ -1,9 +1,9 @@
 
 # flutter_sfs (Flutter Screen Font Size)
 ---
-It provides a simple and flexible way to adjust font sizes in Flutter apps based on screen size. The package allows developers to define a range of minimum and maximum font sizes, and automatically calculates the appropriate font size based on the screen size, making it easier to create responsive and adaptive UIs in Flutter.
+It provides a simple and flexible way to adjust font sizes in Flutter apps based on screen size. The package enables developers to define a range of minimum and maximum font sizes, automatically calculating the appropriate font size based on the screen dimensions. This makes it easier to create responsive and adaptive UIs in Flutter.
 
-And you can easily manage text size on `Mobile`, `Tablet`, and `Desktop`.
+Additionally, you can easily manage text sizes across `Mobile`, `Tablet`, and `Desktop` platforms.
 
 ## Installing
 Add ```flutter_sfs``` to your ```pubspec.yaml``` file:
@@ -22,13 +22,14 @@ import 'package:flutter_sfs/flutter_sfs.dart';
 SfsInitBuilder(
       mobileSize: const Size(360, 650),
       tabletSize: const Size(481, 890),
-      desktopSize: const Size(360, 650),
+      desktopSize: const Size(1420, 820),
       fontSizeRange: Range(min: 10, max: 22),
       multiFontSizeRange: {
         's': Range(min: 8, max: 18), // Small text size
         'n': Range(min: 14, max: 24), // Normal text size
         'm': Range(min: 16, max: 26), // Medium text size
         'h': Range(min: 16, max: 28), // Header text size
+        'xl': Range(min: 24, max: 38),  // Extra large text size
         'btn': Range(min: 14, max: 24), // Button text size
       },
       divideRange: DivideRange(
@@ -41,13 +42,15 @@ SfsInitBuilder(
       ),
       builder: (context, child) {
         return MaterialApp(
-          navigatorKey: sfsNavigatorKey, // Add this, it's required
           title: 'flutter_sfs App Demo',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: 
+          home: _
         );
+      },
+      didChangeSfsMetrics: () {
+        TextStyles.didChangeSfsMatrix();
       },
     );
 ```
@@ -76,7 +79,5 @@ Text(
   style: TextStyle(fontSize: 16.fs('h')),// Header text size
 ),
 ```
-Globle context: ```sfsContext```, screen width: ```sfsWidth```, screen height: ```sfsHeight```.
 
-
-This ```flutter_sfs``` is a powerful package that simplifies font size handling in Flutter apps, making it easier to create responsive and adaptive UIs that look great.
+This ```flutter_sfs``` package is a powerful tool that simplifies font size management in Flutter apps, making it easier to create responsive and adaptive UIs that look visually appealing.

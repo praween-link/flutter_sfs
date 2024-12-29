@@ -33,6 +33,7 @@ class SfsInitBuilder extends StatefulWidget {
     this.screenMinSize, //const Size(350, 650),
     this.screenMaxSize, //const Size(920, 1024),
     this.divideRange,
+    this.didChangeSfsMetrics,
   });
   final SfsBuilder builder;
   final Widget? child;
@@ -54,6 +55,9 @@ class SfsInitBuilder extends StatefulWidget {
   final Size? screenMinSize;
   final Size? screenMaxSize;
 
+  /// --[didChangeSfsMetrics] This callback listens for changes in the screen size.
+  final void Function()? didChangeSfsMetrics;
+
   /// When you create an app for Mobile, Tablet, and Desktop for a better responsive app,
   /// you need to define this [percentUse] for the range of font size, get from your custom font size range by percentage.
 
@@ -69,27 +73,20 @@ class SfsInitBuilder extends StatefulWidget {
 class _SfsInitBuilderState extends State<SfsInitBuilder>
     with WidgetsBindingObserver {
   MediaQueryData? _mediaQueryData;
-  bool _wrappedInMediaQuery = false;
 
   WidgetsBinding get binding => WidgetsFlutterBinding.ensureInitialized();
 
   MediaQueryData get mediaQueryData => _mediaQueryData!;
-  bool get wrappedInMediaQuery => _wrappedInMediaQuery;
-
-  MediaQueryData get getMediaQueryData {
-    final mediaQueryData = MediaQuery.maybeOf(context);
-
-    if (mediaQueryData != null) {
-      _wrappedInMediaQuery = true;
-      return mediaQueryData;
-    }
-
-    return MediaQueryData.fromWindow(binding.window);
-  }
 
   _updateTree(Element el) {
     el.markNeedsBuild();
     el.visitChildren(_updateTree);
+  }
+
+  MediaQueryData? getUpdatedMQ() {
+    final view = View.maybeOf(context);
+    if (view != null) return MediaQueryData.fromView(view);
+    return null;
   }
 
   @override
@@ -101,10 +98,14 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
   @override
   void didChangeMetrics() {
     final oldMediaQueryData = _mediaQueryData!;
-    final newMediaQueryData = getMediaQueryData;
+    final newMediaQueryData = getUpdatedMQ();
 
     if (widget.scaleByHeight ||
-        widget.rebuildFactor(oldMediaQueryData, newMediaQueryData)) {
+        (newMediaQueryData != null &&
+            widget.rebuildFactor(oldMediaQueryData, newMediaQueryData))) {
+      if (widget.didChangeSfsMetrics != null) {
+        widget.didChangeSfsMetrics!();
+      }
       _mediaQueryData = newMediaQueryData;
       _updateTree(context as Element);
     }
@@ -113,7 +114,7 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _mediaQueryData ??= getMediaQueryData;
+    _mediaQueryData ??= getUpdatedMQ();
     didChangeMetrics();
   }
 
@@ -125,6 +126,7 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
 
   @override
   Widget build(BuildContext context) {
+    mq = _mediaQueryData; //newMQ();
     return MediaQuery(
       data: mediaQueryData,
       child: Builder(

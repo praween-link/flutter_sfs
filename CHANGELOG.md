@@ -20,3 +20,8 @@
 ## 0.2.1
 
 * Issue fixed
+
+## 1.0.0
+* egnore `navigatorKey`
+* Easy to use text style/font sizes, with `didChangeSfsMetrics` callback function, `see example`
+* Reaised issue with `outo route package` resolved

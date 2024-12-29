@@ -8,38 +8,40 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return SfsInitBuilder(
       mobileSize: const Size(360, 650),
       tabletSize: const Size(481, 890),
-      desktopSize: const Size(360, 650),
+      desktopSize: const Size(1420, 820),
       fontSizeRange: Range(min: 10, max: 22),
       multiFontSizeRange: {
-        's': Range(min: 8, max: 18), // Small text size
-        'n': Range(min: 14, max: 24), // Normal text size
-        'm': Range(min: 16, max: 26), // Medium text size
-        'h': Range(min: 16, max: 28), // Header text size
-        'btn': Range(min: 14, max: 24), // Button text size
+        's': Range(min: 8, max: 18),
+        'n': Range(min: 14, max: 24),
+        'm': Range(min: 16, max: 26),
+        'h': Range(min: 16, max: 28),
+        'xl': Range(min: 24, max: 38),
+        'btn': Range(min: 14, max: 24),
       },
       divideRange: DivideRange(
-        // Divided range for mobile
-        pergMob: Range(min: 0.0, max: 60.0), // %
-        // Divided range for tablet
-        pergTab: Range(min: 20.0, max: 80.0), // %
-        // Divided range for desktop
-        pergDesk: Range(min: 35.0, max: 100.0), // %
+        pergMob: Range(min: 0.0, max: 60.0),
+        pergTab: Range(min: 20.0, max: 80.0),
+        pergDesk: Range(min: 35.0, max: 100.0),
       ),
       builder: (context, child) {
         return MaterialApp(
-          navigatorKey: sfsNavigatorKey,
-          title: 'flutter_sfs App Demo',
+          title: 'flutter_sfs example',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+            useMaterial3: true,
           ),
           home: const HomeScreen(),
         );
+      },
+
+      /// --[didChangeSfsMetrics] This callback listens for changes in the screen size.
+      didChangeSfsMetrics: () {
+        TextStyles.didChangeSfsMatrix();
       },
     );
   }
@@ -82,6 +84,10 @@ class HomeScreen extends StatelessWidget {
             "Header text size",
             style: TextStyle(fontSize: 16.fsKey('hl')),
           ),
+          Text(
+            "From global TextStyle",
+            style: TextStyles.medium,
+          ),
           const Divider(),
           ElevatedButton(
             onPressed: () {
@@ -96,4 +102,22 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class TextStyles {
+  TextStyles.didChangeSfsMatrix() {
+    _didChanged();
+  }
+
+  _didChanged() {
+    normal = TextStyle(fontSize: 14.fs('n'));
+    medium = TextStyle(fontSize: 14.fs('m'));
+    button = TextStyle(fontSize: 14.fs('btn'));
+    xlarge = TextStyle(fontSize: 14.fs('xl'));
+  }
+
+  static TextStyle normal = TextStyle(fontSize: 14.fs('n'));
+  static TextStyle medium = TextStyle(fontSize: 14.fs('m'));
+  static TextStyle button = TextStyle(fontSize: 14.fs('btn'));
+  static TextStyle xlarge = TextStyle(fontSize: 14.fs('xl'));
 }

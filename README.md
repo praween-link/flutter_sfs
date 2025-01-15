@@ -1,9 +1,13 @@
 
 # flutter_sfs (Flutter Screen Font Size)
 ---
-It provides a simple and flexible way to adjust font sizes in Flutter apps based on screen size. The package enables developers to define a range of minimum and maximum font sizes, automatically calculating the appropriate font size based on the screen dimensions. This makes it easier to create responsive and adaptive UIs in Flutter.
+This Flutter package provides a simple and flexible way to adjust font sizes based on screen dimensions. Developers can define a range of minimum and maximum font sizes, and the package automatically calculates the optimal font size according to the screen size. This approach simplifies the creation of responsive and adaptive UIs in Flutter applications.
 
-Additionally, you can easily manage text sizes across `Mobile`, `Tablet`, and `Desktop` platforms.
+## Key Features:
+* Effortlessly manage text sizes across Mobile, Tablet, and Desktop platforms.
+* Set font sizes easily with: `fontSize:` `16.s`, `16.fs('m')`, `16.fs('n', t: 18, d: 20)`, `16.fs('h')`
+* Adjust container dimensions with `.h` (height), `.w` (width), and `.r` (radius).
+* Simplify spacing between components using `.wbox` and `.hbox`.
 
 ## Installing
 Add ```flutter_sfs``` to your ```pubspec.yaml``` file:
@@ -55,6 +59,8 @@ SfsInitBuilder(
     );
 ```
 
+#### Use like this for text size:
+
 ```dart
 Text(
   "Hello, Flutter",
@@ -79,5 +85,27 @@ Text(
   style: TextStyle(fontSize: 16.fs('h')),// Header text size
 ),
 ```
+
+#### Use like this for card height, width or radius:
+```dart
+Column(
+  children: [
+    Text(
+      "Title",
+      style: TextStyle(fontSize: 18.s),
+    ),
+    15.hbox,
+    Container(
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.circular(18.r),
+      ),
+      height: 100.h,
+      width: 100.w,
+    ),
+  ],
+)
+```
+
 
 This ```flutter_sfs``` package is a powerful tool that simplifies font size management in Flutter apps, making it easier to create responsive and adaptive UIs that look visually appealing.

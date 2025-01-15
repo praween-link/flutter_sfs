@@ -58,6 +58,15 @@ class HomeScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(18.r),
+            ),
+            height: 100.w,
+            width: 100.w,
+          ),
+          15.hbox,
           const Divider(),
           Text(
             "Default text size",

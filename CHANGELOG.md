@@ -25,3 +25,7 @@
 * egnore `navigatorKey`
 * Easy to use text style/font sizes, with `didChangeSfsMetrics` callback function, `see example`
 * Reaised issue with `outo route package` resolved
+
+## 1.1.0
+* Adjust container dimensions with .h (height), .w (width), and .r (radius).
+* Simplify spacing between components using .wbox and .hbox.

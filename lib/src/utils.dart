@@ -21,7 +21,16 @@ extension FontSizeExtension on num {
 }
 
 /// Without range
-extension MqWidth on num {}
+extension CardSizeExtension on num {
+  /// --return double
+  double get w => SFS.w(this);
+  double get h => SFS.h(this);
+  double get r => SFS.w(this);
+
+  /// --return widget
+  Widget get wbox => SizedBox(width: SFS.w(this));
+  Widget get hbox => SizedBox(height: SFS.h(this));
+}
 
 ///=============---=============
 class SizeRange {

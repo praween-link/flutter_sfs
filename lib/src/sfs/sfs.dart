@@ -18,8 +18,7 @@ class SFS {
   /// New font size
   static double font(num s) {
     if (_sizeRange != null) {
-      double newSize =
-          _fsc._fontSize(s.toDouble(), mq?.size.width ?? 0.0);
+      double newSize = _fsc._fontSize(s.toDouble(), mq?.size.width ?? 0.0);
       return newSize;
     } else {
       // handle the exception here
@@ -32,11 +31,8 @@ class SFS {
     if (_sizeRange != null) {
       if (_sizeRange!.multiFontSizeRange != null &&
           _sizeRange!.multiFontSizeRange![k] != null) {
-        double newSize = _fsc._fontSizeKey(
-            s.toDouble(),
-            mq?.size.width ?? 0.0,
-            k,
-            Range(min: 100.0, max: 100.0));
+        double newSize = _fsc._fontSizeKey(s.toDouble(), mq?.size.width ?? 0.0,
+            k, Range(min: 100.0, max: 100.0));
         return newSize;
       } else {
         return s.toDouble();
@@ -61,14 +57,31 @@ class SFS {
       if (_sizeRange!.multiFontSizeRange != null &&
           _sizeRange!.multiFontSizeRange![k] != null) {
         double newSize = _fsc._fontSizeKey(
-            newFont,
-            mq?.size.width ?? 0.0,
-            k,
-            Range(min: 100.0, max: 100.0));
+            newFont, mq?.size.width ?? 0.0, k, Range(min: 100.0, max: 100.0));
         return newSize;
       } else {
         return newFont.toDouble();
       }
+    } else {
+      // handle the exception here
+      throw Exception("First you required to wrap MaterialApp with 'SFS'.");
+    }
+  }
+
+  /// New width
+  static double w(num v) {
+    if (_sizeRange != null) {
+      return _fsc._getWidth(v.toDouble(), mq?.size.width ?? 0.0);
+    } else {
+      // handle the exception here
+      throw Exception("First you required to wrap MaterialApp with 'SFS'.");
+    }
+  }
+
+  /// New height
+  static double h(num v) {
+    if (_sizeRange != null) {
+      return _fsc._getHeight(v.toDouble(), mq?.size.width ?? 0.0);
     } else {
       // handle the exception here
       throw Exception("First you required to wrap MaterialApp with 'SFS'.");
@@ -129,6 +142,55 @@ class SfsCal {
     _scrWidthPegD = ((_desktopCurr.width - _scrMin.width) * 100) /
         (_scrMax.width - _scrMin.width);
   }
+
+  /// ======== Calculation of width and height ==============================
+  double _getWidth(double v, double widthValue) {
+    double defaultScreenWidth = _mobileCurr.width;
+    double value = v;
+    // if (_currentScreenType() == 't') {
+    //   defaultScreenWidth = _tabletCurr.width;
+    //   value = t ?? v;
+    // } else if (_currentScreenType() == 'd') {
+    //   defaultScreenWidth = _desktopCurr.width;
+    //   value = d ?? t ?? v;
+    // }
+
+    double updatedPerg = (100 - (widthValue / defaultScreenWidth * 100)) * -1;
+
+    double result = (updatedPerg / 100) * value;
+    if (updatedPerg < 0) {
+      result = value - result;
+    } else {
+      result = value + result;
+    }
+    return result;
+  }
+
+  double _getHeight(double v, double heightValue) {
+    double defaultScreenHeight = _mobileCurr.height;
+    double value = v;
+    // if (_currentScreenType() == 't') {
+    //   defaultScreenHeight = _tabletCurr.height;
+    //   value = t ?? v;
+    // } else if (_currentScreenType() == 'd') {
+    //   defaultScreenHeight = _desktopCurr.height;
+    //   value = d ?? t ?? v;
+    // }
+
+    double updatedPerg = (100 - (heightValue / defaultScreenHeight * 100)) * -1;
+
+    double result = ((updatedPerg / 100) * value).abs();
+    if (updatedPerg < 0) {
+      result = value - result;
+    } else {
+      result = result + value;
+    }
+    return result;
+  }
+
+  /// =======================================================================
+
+  /// ======== Calculation of text font sizes ===============================
 
   double _fontSize(double size, double scr) {
     return _calculate(
@@ -212,6 +274,8 @@ class SfsCal {
       return newScrPegX <= 1 ? min : max;
     }
   }
+
+  /// ======================================================================
 
   String _currentScreenType() {
     double width = mq?.size.width ?? 0.0;

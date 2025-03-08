@@ -29,3 +29,6 @@
 ## 1.1.0
 * Adjust container dimensions with .h (height), .w (width), and .r (radius).
 * Simplify spacing between components using .wbox and .hbox.
+
+## 1.1.1
+* Issue fixes

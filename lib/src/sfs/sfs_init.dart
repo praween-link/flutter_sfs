@@ -127,47 +127,28 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
   @override
   Widget build(BuildContext context) {
     mq = _mediaQueryData; //newMQ();
-    return MediaQuery(
-      data: mediaQueryData,
-      child: Builder(
-        builder: (context) {
-          final deviceData = MediaQuery.maybeOf(context);
-          final deviceSize = deviceData?.size ?? widget.mobileSize;
-          return Builder(builder: (context) {
-            SFS.init(SizeRange(
-              screenMinSize: widget.screenMinSize,
-              screenMaxSize: widget.screenMaxSize,
-              mobileSize: widget.mobileSize,
-              fontSizeRange: widget.fontSizeRange,
-              multiFontSizeRange: widget.multiFontSizeRange, // 8------18
-              divideRange: widget.divideRange ??
-                  DivideRange(
-                    // 100% range of font size for mobile
-                    pergMob: Range(min: 0.0, max: 100.0),
-                    // 100% range of font size for For tablet
-                    pergTab: Range(min: 0.0, max: 100.0),
-                    // 100% range of font size for For desktop
-                    pergDesk: Range(min: 0.0, max: 100.0),
-                  ),
-            ));
-            return SizedBox(
-                width: deviceSize.width,
-                height: deviceSize.height,
-                child: FittedBox(
-                  fit: BoxFit.none,
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: widget.scaleByHeight
-                        ? (deviceSize.height * widget.mobileSize.width) /
-                            widget.mobileSize.height
-                        : deviceSize.width,
-                    height: deviceSize.height,
-                    child: widget.builder.call(context, widget.child),
-                  ),
-                ));
-          });
-        },
-      ),
+    return Builder(
+      builder: (context) {
+        return Builder(builder: (context) {
+          SFS.init(SizeRange(
+            screenMinSize: widget.screenMinSize,
+            screenMaxSize: widget.screenMaxSize,
+            mobileSize: widget.mobileSize,
+            fontSizeRange: widget.fontSizeRange,
+            multiFontSizeRange: widget.multiFontSizeRange, // 8------18
+            divideRange: widget.divideRange ??
+                DivideRange(
+                  // 100% range of font size for mobile
+                  pergMob: Range(min: 0.0, max: 100.0),
+                  // 100% range of font size for For tablet
+                  pergTab: Range(min: 0.0, max: 100.0),
+                  // 100% range of font size for For desktop
+                  pergDesk: Range(min: 0.0, max: 100.0),
+                ),
+          ));
+          return widget.builder.call(context, widget.child);
+        });
+      },
     );
   }
 }

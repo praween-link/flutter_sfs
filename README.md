@@ -1,111 +1,171 @@
-
-# flutter_sfs (Flutter Screen Font Size)
+# 🌍 flutter_sfs (Flutter Screen Font Size)
 ---
-This Flutter package provides a simple and flexible way to adjust font sizes based on screen dimensions. Developers can define a range of minimum and maximum font sizes, and the package automatically calculates the optimal font size according to the screen size. This approach simplifies the creation of responsive and adaptive UIs in Flutter applications.
+A simple, highly performant, and flexible package to create **Responsive Flutter UIs** with zero boilerplate.
 
-## Key Features:
-* Effortlessly manage text sizes across Mobile, Tablet, and Desktop platforms.
-* Set font sizes easily with: `fontSize:` `16.s`, `16.fs('m')`, `16.fs('n', t: 18, d: 20)`, `16.fs('h')`
-* Adjust container dimensions with `.h` (height), `.w` (width), and `.r` (radius).
-* Simplify spacing between components using `.wbox` and `.hbox`.
 
-## Installing
-Add ```flutter_sfs``` to your ```pubspec.yaml``` file:
-```dart
+Say goodbye to injecting `MediaQuery.of(context)` into every widget! `flutter_sfs` uses elegant Dart extensions (`.s`, `.w`, `.h`, `.p`) to automatically scale text, dimensions, and padding across Mobile, Tablet, and Desktop screens dynamically.
+
+
+## 💡 Why choose `flutter_sfs`?
+* **O(1) Memory Performance:** Computes simple mathematical ratios instead of generating massive `InheritedWidget` wrapper trees found in other layout packages.
+* **Debounced Window Resizing:** Optimizes desktop and web resizing out-of-the-box so your app never freezes or drops frames when users drag the window.
+* **Incredible Syntax Brevity:** Writing `padding: 16.p` is massively faster and cleaner than writing `EdgeInsets.all(MediaQuery.of(context).size.width * 0.05)`.
+* **Accessibility Native:** Built-in `respectSystemTextScale` safely multiply outputs against system accessibility sliders ensuring visually impaired users aren't left behind.
+
+
+---
+
+
+## 🚀 Getting Started (It's this easy!)
+
+
+### 1. Install
+Add `flutter_sfs` to your `pubspec.yaml`:
+```yaml
 dependencies:
-  flutter_sfs:
+ flutter_sfs: latest
 ```
-Import ```flutter_sfs``` in files that it will be used:
+
+
+### 2. Initialize (Wrap your App once)
+Wrap your `MaterialApp` with `SfsInitBuilder`. This sets the baseline dimensions for scaling!
 ```dart
 import 'package:flutter_sfs/flutter_sfs.dart';
-```
-## Getting started
----
-* First wrap MaterialApp with ```SfsInitBuilder```
-```dart
-SfsInitBuilder(
-      mobileSize: const Size(360, 650),
-      tabletSize: const Size(481, 890),
-      desktopSize: const Size(1420, 820),
-      fontSizeRange: Range(min: 10, max: 22),
-      multiFontSizeRange: {
-        's': Range(min: 8, max: 18), // Small text size
-        'n': Range(min: 14, max: 24), // Normal text size
-        'm': Range(min: 16, max: 26), // Medium text size
-        'h': Range(min: 16, max: 28), // Header text size
-        'xl': Range(min: 24, max: 38),  // Extra large text size
-        'btn': Range(min: 14, max: 24), // Button text size
-      },
-      divideRange: DivideRange(
-        // Divided range for mobile
-        pergMob: Range(min: 0.0, max: 60.0), // %
-        // Divided range for tablet
-        pergTab: Range(min: 20.0, max: 80.0), // %
-        // Divided range for desktop
-        pergDesk: Range(min: 35.0, max: 100.0), // %
-      ),
-      builder: (context, child) {
-        return MaterialApp(
-          title: 'flutter_sfs App Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: _
-        );
-      },
-      didChangeSfsMetrics: () {
-        TextStyles.didChangeSfsMatrix();
-      },
-    );
+
+
+void main() => runApp(const MyApp());
+
+
+class MyApp extends StatelessWidget {
+ @override
+ Widget build(BuildContext context) {
+   return SfsInitBuilder(
+     mobileSize: const Size(360, 650),     // Baseline mobile scope
+     tabletSize: const Size(481, 890),     // Baseline tablet scope
+     desktopSize: const Size(1420, 820),   // Baseline desktop scope
+     respectSystemTextScale: true,         // Allows phone accessibility to scale text
+     orientationAware: true,               // Safely calculates sideways screen dimensions
+     builder: (context, child) {
+       return MaterialApp(
+         title: 'flutter_sfs App',
+         home: HomeScreen(),
+       );
+     },
+     didChangeSfsMetrics: () {
+       // Callback functionality when window rescales
+     },
+   );
+ }
+}
 ```
 
-#### Use like this for text size:
 
+### 3. Use Extensions Anywhere safely
+You can now use responsive extensions globally:
 ```dart
-Text(
-  "Hello, Flutter",
-  style: TextStyle(fontSize: 16.s),
-),
-```
-
-```dart
-Text(
-  "Hello, Flutter",
-  style: TextStyle(fontSize: 16.fs('m')),// Medium text size
-),
-
-Text(
-  "Text side for all Mobile, Tablate and Desktop",
-  style: TextStyle(fontSize: 16.fs('n', t: 18, d: 20)),
-  // Normal text size (16-> for mobile, 18-> for tablet, 20-> for desktop)
-),
-
-Text(
-  "Hello, Flutter",
-  style: TextStyle(fontSize: 16.fs('h')),// Header text size
-),
-```
-
-#### Use like this for card height, width or radius:
-```dart
-Column(
-  children: [
-    Text(
-      "Title",
-      style: TextStyle(fontSize: 18.s),
-    ),
-    15.hbox,
-    Container(
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(18.r),
-      ),
-      height: 100.h,
-      width: 100.w,
-    ),
-  ],
+Container(
+ padding: 16.p, // Responsive EdgeInsets.all
+ width: 100.w, // Responsive width
+ height: 50.h, // Responsive height
+ decoration: BoxDecoration(
+   borderRadius: BorderRadius.circular(12.r), // Responsive corner radius
+ ),
+ child: Text(
+   "Hello World",
+   style: TextStyle(fontSize: 18.s), // Responsive text size!
+ ),
 )
 ```
 
 
-This ```flutter_sfs``` package is a powerful tool that simplifies font size management in Flutter apps, making it easier to create responsive and adaptive UIs that look visually appealing.
+---
+
+
+## 🛠 Extension Cheat Sheet
+
+
+Here are all the powerful `num` extensions available instantly:
+
+
+| Extension | Returns | Description |
+|-----------|---------|-------------|
+| **`16.s`** | `double` | Automatic auto-scaled **font size**. |
+| **`16.w`** | `double` | Auto-scaled screen **width / radius**. |
+| **`16.h`** | `double` | Auto-scaled screen **height**. |
+| **`16.p`** | `EdgeInsets` | Scaled `EdgeInsets.all()`. |
+| **`16.ph`** | `EdgeInsets` | Scaled `EdgeInsets.symmetric(horizontal: 16.w)`. |
+| **`16.pv`** | `EdgeInsets` | Scaled `EdgeInsets.symmetric(vertical: 16.h)`. |
+| **`16.wbox`** | `Widget` | Empty structured `SizedBox(width: 16.w)`. |
+| **`16.hbox`** | `Widget` | Empty structured `SizedBox(height: 16.h)`. |
+
+
+### Advanced Features
+
+
+**Custom Breakpoint Text Keys `.fs()`**
+If you defined custom text sizes in the `SfsInitBuilder`, reference them by key:
+```dart
+Text("Medium text", style: TextStyle(fontSize: 16.fs('m')));
+Text("Huge text", style: TextStyle(fontSize: 16.fs('xl')));
+```
+
+
+**Explicit Device Constraints `.v()`**
+Sometimes, you just want to completely skip math and hardcode layout responses per device:
+```dart
+// Returns 100 on Mobile, 150 on Tablet, 200 on Desktop universally
+Container(height: 100.v(m: 100, t: 150, d: 200));
+```
+
+
+**Sliver Adapters**
+Responsive spacing straight into your `CustomScrollView`:
+```dart
+SliverList(delegate: ...)
+20.hSliverBox, // SliverToBoxAdapter(SizedBox(height...))
+SliverList(delegate: ...)
+```
+
+
+---
+
+
+## 👑 Pro Tip: Global ThemeData Integration
+
+
+To make scaling automatic across an entire app, define an `AppTheme` and inject it inside the `SfsInitBuilder`. This causes your global UI to dynamically recalculate instantly every time window sizes pivot!
+
+
+```dart
+class AppTheme {
+ static ThemeData get lightTheme {
+   return ThemeData(
+     // Configure everything responsive centrally
+     textTheme: TextTheme(
+       displayLarge: TextStyle(fontSize: 32.s, fontWeight: FontWeight.bold),
+       bodyLarge: TextStyle(fontSize: 16.s),
+       labelLarge: TextStyle(fontSize: 16.fs('btn')),
+     ),
+     elevatedButtonTheme: ElevatedButtonThemeData(
+       style: ElevatedButton.styleFrom(
+         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+       )
+     )
+   );
+ }
+}
+
+
+// In main.dart -> builder:
+return MaterialApp(
+ theme: AppTheme.lightTheme, // Theme dynamically reacts to resized screens automatically!
+ home: ...,
+);
+```
+
+
+Enjoy building beautiful, ultra-fast, responsive UIs easily!
+
+
+

@@ -1,6 +1,6 @@
 name: flutter_sfs
-description: Easily manage text font sizes within a defined range, adapting seamlessly to mobile, tablet, and desktop screen sizes.
-version: 1.1.0
+description: Manage responsive text sizes with defined ranges across mobile, tablet, and desktop.
+version: 1.2.0
 homepage: https://github.com/praween-link/flutter_sfs
 auther: Praween Kumar
 

@@ -1,31 +1,42 @@
-## 0.0.1
+# Changelog
 
-## Manage according to Screen Size
-* Text Font Size in range
+## 0.0.1
+- Manage text scaling according to screen size  
+- Support dynamic text font size ranges  
 
 ## 0.1.0
-
-* Text Font Size in range: issue fixed
-* We can add multiple range for multiple text (small, nomal, title, header)
+- Fixed text font size range issues  
+- Added support for multiple text ranges (small, normal, title, header)  
 
 ## 0.1.1
-
-* Issue fixed
+- Bug fixes and minor improvements  
 
 ## 0.2.0
-
-* Add new functionality to easy to define text size and range for tablate and desktop also.
-* fontSize: 16.fs('m', t: 18, d: 22)
+- Added functionality to easily define text sizes for tablet and desktop  
+- Example: `fontSize: 16.fs('m', t: 18, d: 22)`  
 
 ## 0.2.1
-
-* Issue fixed
+- Bug fixes and stability improvements  
 
 ## 1.0.0
-* egnore `navigatorKey`
-* Easy to use text style/font sizes, with `didChangeSfsMetrics` callback function, `see example`
-* Reaised issue with `outo route package` resolved
+### Breaking Changes
+- `navigatorKey` is no longer required  
+
+### Improvements
+- Simplified text styling and font sizing  
+- Added `didChangeSfsMetrics` callback (see example)  
+- Resolved issues with `auto_route` package  
 
 ## 1.1.0
-* Adjust container dimensions with .h (height), .w (width), and .r (radius).
-* Simplify spacing between components using .wbox and .hbox.
+- Added responsive container helpers: `.h` (height), `.w` (width), `.r` (radius)  
+- Simplified spacing with `.wbox` and `.hbox` utilities  
+
+## 1.2.0
+- Added padding extensions:
+  - `16.p` → Scaled `EdgeInsets.all()`
+  - `16.ph` → Scaled horizontal padding
+  - `16.pv` → Scaled vertical padding  
+- Added configuration options:
+  - `respectSystemTextScale` for accessibility support  
+  - `orientationAware` for better dimension handling  
+- Code optimizations and performance improvements  

@@ -11,6 +11,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfsInitBuilder(
+      respectSystemTextScale: true,
+      orientationAware: true,
       mobileSize: const Size(360, 650),
       tabletSize: const Size(481, 890),
       desktopSize: const Size(1420, 820),
@@ -59,12 +61,15 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
+            padding: 16.p,
             decoration: BoxDecoration(
               color: Colors.blue,
               borderRadius: BorderRadius.circular(18.r),
             ),
-            height: 100.w,
+            height: 100.v(m: 100, t: 150, d: 200),
             width: 100.w,
+            child: const Center(
+                child: Text("Box", style: TextStyle(color: Colors.white))),
           ),
           15.hbox,
           const Divider(),

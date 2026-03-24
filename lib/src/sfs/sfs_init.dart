@@ -1,14 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sfs/flutter_sfs.dart';
 
 typedef RebuildFactor = bool Function(
     MediaQueryData oldMediaQueryData, MediaQueryData newMediaQueryData);
 
+/// A custom builder function exposing the [BuildContext] required for [MaterialApp].
 typedef SfsBuilder = Widget Function(
   BuildContext context,
   Widget? child,
 );
 
+/// Defines caching strategies to avoid unnecessary widget tree rebuilds.
 class RebuildFactors {
   const RebuildFactors._();
 
@@ -17,7 +21,10 @@ class RebuildFactors {
   }
 }
 
-// Stateful widget
+/// A structural wrapper that initializes the `flutter_sfs` mathematical scaling engine.
+///
+/// Extremely important: [SfsInitBuilder] must wrap your [MaterialApp] or [CupertinoApp]
+/// in order to correctly hook into the [WidgetsBindingObserver] for mapping window resizes.
 class SfsInitBuilder extends StatefulWidget {
   const SfsInitBuilder({
     super.key,
@@ -34,6 +41,8 @@ class SfsInitBuilder extends StatefulWidget {
     this.screenMaxSize, //const Size(920, 1024),
     this.divideRange,
     this.didChangeSfsMetrics,
+    this.respectSystemTextScale = false,
+    this.orientationAware = false,
   });
   final SfsBuilder builder;
   final Widget? child;
@@ -50,21 +59,29 @@ class SfsInitBuilder extends StatefulWidget {
   final Size desktopSize;
   final Range? fontSizeRange;
 
-  /// Create your custom different font size key, where pass data in map [multiFontSizeRange] required key and Range of your text size.
+  /// Mapping overrides assigning string keys (like 'btn') to specifically bounded text scopes.
   final Map<String, Range>? multiFontSizeRange;
+
+  /// The absolute minimal resolution width/height mapped.
   final Size? screenMinSize;
+
+  /// The absolute maximum resolution width/height mapped.
   final Size? screenMaxSize;
 
-  /// --[didChangeSfsMetrics] This callback listens for changes in the screen size.
+  /// Callback executed exactly when the screen metrics map correctly triggers a recalculation.
   final void Function()? didChangeSfsMetrics;
 
-  /// When you create an app for Mobile, Tablet, and Desktop for a better responsive app,
-  /// you need to define this [percentUse] for the range of font size, get from your custom font size range by percentage.
-
-  /// m: Mobile - (Range min: 0%, max: 60%)
-  /// t: Tablet - (Range min: 5%, max: 80%)
-  /// d: Desktop - (Range min: 15%, max: 100%)
+  /// Configuration adjusting mathematical breakpoint triggers:
+  /// - `m`: Mobile (Range min: 0%, max: 60%)
+  /// - `t`: Tablet (Range min: 5%, max: 80%)
+  /// - `d`: Desktop (Range min: 15%, max: 100%)
   final DivideRange? divideRange;
+
+  /// Multiplies output font scales efficiently against system accessibility font-size sliders.
+  final bool respectSystemTextScale;
+
+  /// Flags dimension parsing to clamp scaling maps safely to the short axis under landscape
+  final bool orientationAware;
 
   @override
   State<SfsInitBuilder> createState() => _SfsInitBuilderState();
@@ -73,6 +90,7 @@ class SfsInitBuilder extends StatefulWidget {
 class _SfsInitBuilderState extends State<SfsInitBuilder>
     with WidgetsBindingObserver {
   MediaQueryData? _mediaQueryData;
+  Timer? _debounceTimer;
 
   WidgetsBinding get binding => WidgetsFlutterBinding.ensureInitialized();
 
@@ -95,8 +113,9 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
     binding.addObserver(this);
   }
 
-  @override
-  void didChangeMetrics() {
+  void _handleMetricsChange() {
+    if (!mounted) return;
+
     final oldMediaQueryData = _mediaQueryData!;
     final newMediaQueryData = getUpdatedMQ();
 
@@ -106,20 +125,34 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
       if (widget.didChangeSfsMetrics != null) {
         widget.didChangeSfsMetrics!();
       }
-      _mediaQueryData = newMediaQueryData;
+      setState(() {
+        _mediaQueryData = newMediaQueryData;
+      });
       _updateTree(context as Element);
     }
   }
 
   @override
+  void didChangeMetrics() {
+    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+
+    _debounceTimer =
+        Timer(const Duration(milliseconds: 150), _handleMetricsChange);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    bool isFirstLoad = _mediaQueryData == null;
     _mediaQueryData ??= getUpdatedMQ();
-    didChangeMetrics();
+    if (!isFirstLoad) {
+      _handleMetricsChange();
+    }
   }
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     binding.removeObserver(this);
     super.dispose();
   }
@@ -133,39 +166,39 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
         builder: (context) {
           final deviceData = MediaQuery.maybeOf(context);
           final deviceSize = deviceData?.size ?? widget.mobileSize;
-          return Builder(builder: (context) {
-            SFS.init(SizeRange(
-              screenMinSize: widget.screenMinSize,
-              screenMaxSize: widget.screenMaxSize,
-              mobileSize: widget.mobileSize,
-              fontSizeRange: widget.fontSizeRange,
-              multiFontSizeRange: widget.multiFontSizeRange, // 8------18
-              divideRange: widget.divideRange ??
-                  DivideRange(
-                    // 100% range of font size for mobile
-                    pergMob: Range(min: 0.0, max: 100.0),
-                    // 100% range of font size for For tablet
-                    pergTab: Range(min: 0.0, max: 100.0),
-                    // 100% range of font size for For desktop
-                    pergDesk: Range(min: 0.0, max: 100.0),
-                  ),
-            ));
-            return SizedBox(
-                width: deviceSize.width,
+
+          SFS.init(SizeRange(
+            screenMinSize: widget.screenMinSize,
+            screenMaxSize: widget.screenMaxSize,
+            mobileSize: widget.mobileSize,
+            fontSizeRange: widget.fontSizeRange,
+            multiFontSizeRange: widget.multiFontSizeRange,
+            divideRange: widget.divideRange ??
+                DivideRange(
+                  pergMob: Range(min: 0.0, max: 100.0),
+                  pergTab: Range(min: 0.0, max: 100.0),
+                  pergDesk: Range(min: 0.0, max: 100.0),
+                ),
+            respectSystemTextScale: widget.respectSystemTextScale,
+            orientationAware: widget.orientationAware,
+          ));
+
+          return SizedBox(
+            width: deviceSize.width,
+            height: deviceSize.height,
+            child: FittedBox(
+              fit: BoxFit.none,
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: widget.scaleByHeight
+                    ? (deviceSize.height * widget.mobileSize.width) /
+                        widget.mobileSize.height
+                    : deviceSize.width,
                 height: deviceSize.height,
-                child: FittedBox(
-                  fit: BoxFit.none,
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: widget.scaleByHeight
-                        ? (deviceSize.height * widget.mobileSize.width) /
-                            widget.mobileSize.height
-                        : deviceSize.width,
-                    height: deviceSize.height,
-                    child: widget.builder.call(context, widget.child),
-                  ),
-                ));
-          });
+                child: widget.builder.call(context, widget.child),
+              ),
+            ),
+          );
         },
       ),
     );

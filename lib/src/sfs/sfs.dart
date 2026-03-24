@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sfs/flutter_sfs.dart';
 
+/// The default fallback minimum font size securely clamped if unconfigured.
 double defaultFontSizeMin = 5;
+
+/// The default fallback maximum font size securely clamped if unconfigured.
 double defaultFontSizeMax = 50;
 
+/// The core static execution layer mapping mathematical layout calculations.
+/// Avoid invoking methods directly; utilize the `num` extensions instead (e.g., `16.s`).
 class SFS {
-  // static SFS _sfs = SFS();
   static SizeRange? _sizeRange;
   static late SfsCal _fsc;
 
-  /// Initilize [SizeRange], it's required
+  /// Initializes the foundational mapping engine dynamically utilizing config [SizeRange].
   static init(SizeRange sizeRange) {
     _sizeRange = sizeRange;
     _fsc = SfsCal(sizeRange: SFS._sizeRange);
   }
 
-  /// New font size
+  /// Extracts the scaled calculated font size mapping dynamically to `s`.
   static double font(num s) {
     if (_sizeRange != null) {
       double newSize = _fsc._fontSize(s.toDouble(), mq?.size.width ?? 0.0);
@@ -26,7 +30,7 @@ class SFS {
     }
   }
 
-  /// New deffirent font size
+  /// Extracts explicit font sizes structurally mapped under string key [k].
   static double fontK(String k, num s) {
     if (_sizeRange != null) {
       if (_sizeRange!.multiFontSizeRange != null &&
@@ -43,14 +47,14 @@ class SFS {
     }
   }
 
-  /// New deffirent font size
+  /// Allows developers to explicitly bypass scaled mathematics by defining
+  /// exact font metrics matching the target device class globally.
   static double fontMulti(String k, num m, {double? t, double? d}) {
     double newFont = m.toDouble();
-    if (t != null) {
-      newFont = _fsc._currentScreenType() == 't' ? t : newFont;
-    }
-    if (d != null) {
-      newFont = _fsc._currentScreenType() == 'd' ? d : newFont;
+    if (t != null || d != null) {
+      String screenType = _fsc._currentScreenType();
+      if (t != null && screenType == 't') newFont = t;
+      if (d != null && screenType == 'd') newFont = d;
     }
     //
     if (_sizeRange != null) {
@@ -68,7 +72,7 @@ class SFS {
     }
   }
 
-  /// New width
+  /// Dynamically maps width boundaries securely enforcing limits.
   static double w(num v) {
     if (_sizeRange != null) {
       return _fsc._getWidth(v.toDouble(), mq?.size.width ?? 0.0);
@@ -78,7 +82,7 @@ class SFS {
     }
   }
 
-  /// New height
+  /// Dynamically maps height boundaries securely enforcing limits.
   static double h(num v) {
     if (_sizeRange != null) {
       return _fsc._getHeight(v.toDouble(), mq?.size.width ?? 0.0);
@@ -87,8 +91,18 @@ class SFS {
       throw Exception("First you required to wrap MaterialApp with 'SFS'.");
     }
   }
+
+  /// Get current screen type (m, t, or d)
+  static String currentScreenType() {
+    if (_sizeRange != null) {
+      return _fsc._currentScreenType();
+    } else {
+      throw Exception("First you required to wrap MaterialApp with 'SFS'.");
+    }
+  }
 }
 
+/// Internal engine coordinating physical screen tracking and dimensional ratios.
 class SfsCal {
   final SizeRange? sizeRange;
   SfsCal({this.sizeRange}) {
@@ -119,17 +133,11 @@ class SfsCal {
     _scrMin = sizeRange!.screenMinSize ?? const Size(320, 560);
     _scrMax = sizeRange!.screenMaxSize ?? const Size(1920, 1080);
     // mobile
-    _mobileCurr = sizeRange!.mobileSize == null
-        ? const Size(360, 620)
-        : sizeRange!.mobileSize!;
+    _mobileCurr = sizeRange!.mobileSize ?? const Size(360, 620);
     // tablet
-    _tabletCurr = sizeRange!.tabletSize == null
-        ? const Size(720, 860)
-        : sizeRange!.tabletSize!;
+    _tabletCurr = sizeRange!.tabletSize ?? const Size(720, 860);
     // desktop
-    _desktopCurr = sizeRange!.desktopSize == null
-        ? const Size(1220, 820)
-        : sizeRange!.desktopSize!;
+    _desktopCurr = sizeRange!.desktopSize ?? const Size(1220, 820);
 
     /// Calculate Screen width percentage
     // mobile
@@ -144,48 +152,21 @@ class SfsCal {
   }
 
   /// ======== Calculation of width and height ==============================
-  double _getWidth(double v, double widthValue) {
-    double defaultScreenWidth = _mobileCurr.width;
-    double value = v;
-    // if (_currentScreenType() == 't') {
-    //   defaultScreenWidth = _tabletCurr.width;
-    //   value = t ?? v;
-    // } else if (_currentScreenType() == 'd') {
-    //   defaultScreenWidth = _desktopCurr.width;
-    //   value = d ?? t ?? v;
-    // }
-
-    double updatedPerg = (100 - (widthValue / defaultScreenWidth * 100)) * -1;
-
-    double result = (updatedPerg / 100) * value;
-    if (updatedPerg < 0) {
-      result = value - result;
-    } else {
-      result = value + result;
+  double _getEffectiveWidth(double actualWidth) {
+    if (sizeRange?.orientationAware == true &&
+        mq?.orientation == Orientation.landscape) {
+      double hX = mq?.size.height ?? 0.0;
+      return actualWidth > hX ? hX : actualWidth;
     }
-    return result;
+    return actualWidth;
+  }
+
+  double _getWidth(double v, double widthValue) {
+    return v * (_getEffectiveWidth(widthValue) / _mobileCurr.width);
   }
 
   double _getHeight(double v, double heightValue) {
-    double defaultScreenHeight = _mobileCurr.height;
-    double value = v;
-    // if (_currentScreenType() == 't') {
-    //   defaultScreenHeight = _tabletCurr.height;
-    //   value = t ?? v;
-    // } else if (_currentScreenType() == 'd') {
-    //   defaultScreenHeight = _desktopCurr.height;
-    //   value = d ?? t ?? v;
-    // }
-
-    double updatedPerg = (100 - (heightValue / defaultScreenHeight * 100)) * -1;
-
-    double result = ((updatedPerg / 100) * value).abs();
-    if (updatedPerg < 0) {
-      result = value - result;
-    } else {
-      result = result + value;
-    }
-    return result;
+    return v * (_getEffectiveWidth(heightValue) / _mobileCurr.height);
   }
 
   /// =======================================================================
@@ -196,14 +177,8 @@ class SfsCal {
     return _calculate(
       size,
       scr,
-      Range(
-        min: sizeRange!.fontSizeRange == null
-            ? defaultFontSizeMin
-            : sizeRange!.fontSizeRange!.min,
-        max: sizeRange!.fontSizeRange == null
-            ? defaultFontSizeMax
-            : sizeRange!.fontSizeRange!.max,
-      ),
+      sizeRange!.fontSizeRange ??
+          Range(min: defaultFontSizeMin, max: defaultFontSizeMax),
     );
   }
 
@@ -216,29 +191,28 @@ class SfsCal {
     return _calculate(
       size,
       scr,
-      Range(
-        min: sizeRange!.multiFontSizeRange![key] == null
-            ? defaultFontSizeMin
-            : sizeRange!.multiFontSizeRange![key]!.min,
-        max: sizeRange!.multiFontSizeRange![key] == null
-            ? defaultFontSizeMax
-            : sizeRange!.multiFontSizeRange![key]!.max,
-      ),
+      sizeRange!.multiFontSizeRange?[key] ??
+          Range(min: defaultFontSizeMin, max: defaultFontSizeMax),
     );
   }
 
   ///
   double _calculate(double size, double width, Range range) {
-    Range newRrange = _currentScreenType() == 'm'
-        ? _getRange(range,
-            sizeRange!.divideRange!.pergMob ?? Range(min: 0.0, max: 100.0))
-        : _currentScreenType() == 't'
-            ? _getRange(range,
-                sizeRange!.divideRange!.pergTab ?? Range(min: 0.0, max: 100.0))
-            : _getRange(
-                range,
-                sizeRange!.divideRange!.pergDesk ??
-                    Range(min: 0.0, max: 100.0));
+    String screenType = _currentScreenType();
+
+    Range pergRange;
+    if (screenType == 'm') {
+      pergRange =
+          sizeRange!.divideRange!.pergMob ?? Range(min: 0.0, max: 100.0);
+    } else if (screenType == 't') {
+      pergRange =
+          sizeRange!.divideRange!.pergTab ?? Range(min: 0.0, max: 100.0);
+    } else {
+      pergRange =
+          sizeRange!.divideRange!.pergDesk ?? Range(min: 0.0, max: 100.0);
+    }
+
+    Range newRrange = _getRange(range, pergRange);
 
 //
     double newFontSize = size <= newRrange.min
@@ -250,35 +224,43 @@ class SfsCal {
     //
     double min = newRrange.min;
     double max = newRrange.max;
-    double currentSize = newFontSize;
 
     /// Calculate text percentage
-    double widthPeg = ((currentSize - min) * 100.0) / (max - min);
+    double widthPeg = ((newFontSize - min) * 100.0) / (max - min);
     //
     double extra = widthPeg -
-        (_currentScreenType() == 'm'
+        (screenType == 'm'
             ? _scrWidthPegM
-            : _currentScreenType() == 't'
+            : screenType == 't'
                 ? _scrWidthPegT
                 : _scrWidthPegD);
     // double newScrPeg = _scrWidthPeg + extra;
 
-    double scrPegX =
-        ((width - _scrMin.width) * 100.0) / (_scrMax.width - _scrMin.width);
+    double effectiveWidth = _getEffectiveWidth(width);
+    double scrPegX = ((effectiveWidth - _scrMin.width) * 100.0) /
+        (_scrMax.width - _scrMin.width);
     double newScrPegX = scrPegX + extra;
 
     /// Return new generated font size according to font range (fontSizeRange [Size]) and screen size (screenSize [Range])
+    double finalSize;
     if (newScrPegX >= 1 && newScrPegX <= 100.0) {
-      return (((max - min) * newScrPegX) / 100.0) + min;
+      finalSize = (((max - min) * newScrPegX) / 100.0) + min;
     } else {
-      return newScrPegX <= 1 ? min : max;
+      finalSize = newScrPegX <= 1 ? min : max;
     }
+
+    if (sizeRange?.respectSystemTextScale == true) {
+      // ignore: deprecated_member_use
+      finalSize *= (mq?.textScaleFactor ?? 1.0);
+    }
+
+    return finalSize;
   }
 
   /// ======================================================================
 
   String _currentScreenType() {
-    double width = mq?.size.width ?? 0.0;
+    double width = _getEffectiveWidth(mq?.size.width ?? 0.0);
     if (width <= 1080 && width >= 720) {
       return 't';
     } else if (width > 1080) {

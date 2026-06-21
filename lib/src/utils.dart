@@ -5,6 +5,9 @@ import 'sfs/sfs.dart';
 /// Global reference to the current [MediaQueryData] tracked by `SfsInitBuilder`.
 MediaQueryData? mq;
 
+/// Global reference to the current display [Size] tracked by `SfsInitBuilder`.
+Size? sfsDisplaySize;
+
 /// Quickly provides the current screen width. Returns 0.0 if SFS is uninitialized.
 double get sfsWidth => mq?.size.width ?? 0.0;
 
@@ -75,6 +78,12 @@ class SizeRange {
   /// Flag to treat landscape sizing securely without blowing scaling logic upward.
   final bool? orientationAware;
 
+  /// Flag to treat unfolded sizing (e.g. #Google Pixel 10) securely without blowing scaling logic upward.
+  final bool? foldableAware;
+
+  /// Flag to treat split screen sizing securely without blowing scaling logic upward.
+  final bool? splitScreenAware;
+
   SizeRange({
     this.screenMinSize,
     this.screenMaxSize,
@@ -86,6 +95,8 @@ class SizeRange {
     this.divideRange,
     this.respectSystemTextScale,
     this.orientationAware,
+    this.foldableAware,
+    this.splitScreenAware,
   });
 }
 

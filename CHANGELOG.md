@@ -40,3 +40,9 @@
   - `respectSystemTextScale` for accessibility support  
   - `orientationAware` for better dimension handling  
 - Code optimizations and performance improvements  
+
+## Unreleased
+### Added
+- `foldableAware` config on `SfsInitBuilder` — clamps scaling to half the height when an unfolded foldable is detected (e.g. Pixel Fold 9 / Pixel Fold 10 / Samsung Foldable)  
+- `splitScreenAware` config on `SfsInitBuilder` — clamps scaling when the app runs in split-screen / multi-window  
+- Layout now also recalculates when the display size changes (e.g. entering/leaving split-screen), not just on window-size changes  

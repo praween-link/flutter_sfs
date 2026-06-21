@@ -171,6 +171,8 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
             screenMinSize: widget.screenMinSize,
             screenMaxSize: widget.screenMaxSize,
             mobileSize: widget.mobileSize,
+            tabletSize: widget.tabletSize,
+            desktopSize: widget.desktopSize,
             fontSizeRange: widget.fontSizeRange,
             multiFontSizeRange: widget.multiFontSizeRange,
             divideRange: widget.divideRange ??

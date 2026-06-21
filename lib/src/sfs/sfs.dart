@@ -1,3 +1,5 @@
+import 'dart:ui' show DisplayFeatureType;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sfs/flutter_sfs.dart';
 
@@ -157,6 +159,12 @@ class SfsCal {
         mq?.orientation == Orientation.landscape) {
       double hX = mq?.size.height ?? 0.0;
       return actualWidth > hX ? hX : actualWidth;
+    } else if (isSplitScreen()) {
+      double hX2 = (mq?.size.height ?? 0.0) / 2;
+      return actualWidth > hX2 ? hX2 : actualWidth;
+    } else if (isUnfoldedFoldable()) {
+      double hX2 = (mq?.size.height ?? 0.0) / 2;
+      return hX2;
     }
     return actualWidth;
   }
@@ -273,4 +281,19 @@ class SfsCal {
       min: (((rangeData.max - rangeData.min) * perg.min) / 100) + rangeData.min,
       max:
           (((rangeData.max - rangeData.min) * perg.max) / 100) + rangeData.min);
+
+  bool isSplitScreen() {
+    final displaySize = sfsDisplaySize;
+    final windowSize = mq?.size;
+    if (displaySize == null || windowSize == null) return false;
+    const tolerance = 100.0; // ignore minor diffs (status bar, rounding)
+    final widthShrunk = (displaySize.width - windowSize.width).abs() > tolerance;
+    final heightShrunk = (displaySize.height - windowSize.height).abs() > tolerance;
+    return widthShrunk || heightShrunk;
+  }
+
+  static bool isUnfoldedFoldable() {
+    final features = mq?.displayFeatures;
+    return features?.any((f) => (f.type == DisplayFeatureType.fold)) ?? false;
+  }
 }

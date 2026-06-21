@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sfs/flutter_sfs.dart';
 
 typedef RebuildFactor = bool Function(
-    MediaQueryData oldMediaQueryData, MediaQueryData newMediaQueryData);
+  MediaQueryData oldMediaQueryData,
+  MediaQueryData newMediaQueryData,
+);
 
 /// A custom builder function exposing the [BuildContext] required for [MaterialApp].
 typedef SfsBuilder = Widget Function(
@@ -43,6 +45,8 @@ class SfsInitBuilder extends StatefulWidget {
     this.didChangeSfsMetrics,
     this.respectSystemTextScale = false,
     this.orientationAware = false,
+    this.foldableAware = false,
+    this.splitScreenAware = false,
   });
   final SfsBuilder builder;
   final Widget? child;
@@ -83,6 +87,12 @@ class SfsInitBuilder extends StatefulWidget {
   /// Flags dimension parsing to clamp scaling maps safely to the short axis under landscape
   final bool orientationAware;
 
+  /// Flags dimension parsing to clamp scaling maps safely to (0.5 * height) axis under unfolded (device become a square #Google Pixel 10)
+  final bool? foldableAware;
+
+  /// Flags dimension parsing to clamp scaling maps safely to (width < (0.5 * height) ? width : (0.5 * height)) under split screen
+  final bool? splitScreenAware;
+
   @override
   State<SfsInitBuilder> createState() => _SfsInitBuilderState();
 }
@@ -90,6 +100,7 @@ class SfsInitBuilder extends StatefulWidget {
 class _SfsInitBuilderState extends State<SfsInitBuilder>
     with WidgetsBindingObserver {
   MediaQueryData? _mediaQueryData;
+  Size? _sfsDisplaySize;
   Timer? _debounceTimer;
 
   WidgetsBinding get binding => WidgetsFlutterBinding.ensureInitialized();
@@ -107,6 +118,12 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
     return null;
   }
 
+  Size? getUpdatedSfsDisplaySize() {
+    final view = View.maybeOf(context);
+    if (view != null) return view.display.size / view.devicePixelRatio;
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -118,8 +135,11 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
 
     final oldMediaQueryData = _mediaQueryData!;
     final newMediaQueryData = getUpdatedMQ();
+    final oldSfsDisplaySize = _sfsDisplaySize;
+    final newSfsDisplaySize = getUpdatedSfsDisplaySize();
 
     if (widget.scaleByHeight ||
+        oldSfsDisplaySize != newSfsDisplaySize ||
         (newMediaQueryData != null &&
             widget.rebuildFactor(oldMediaQueryData, newMediaQueryData))) {
       if (widget.didChangeSfsMetrics != null) {
@@ -127,6 +147,7 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
       }
       setState(() {
         _mediaQueryData = newMediaQueryData;
+        _sfsDisplaySize = newSfsDisplaySize;
       });
       _updateTree(context as Element);
     }
@@ -145,6 +166,7 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
     super.didChangeDependencies();
     bool isFirstLoad = _mediaQueryData == null;
     _mediaQueryData ??= getUpdatedMQ();
+    _sfsDisplaySize = getUpdatedSfsDisplaySize();
     if (!isFirstLoad) {
       _handleMetricsChange();
     }
@@ -160,6 +182,7 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
   @override
   Widget build(BuildContext context) {
     mq = _mediaQueryData; //newMQ();
+    sfsDisplaySize = _sfsDisplaySize;
     return MediaQuery(
       data: mediaQueryData,
       child: Builder(
@@ -183,6 +206,8 @@ class _SfsInitBuilderState extends State<SfsInitBuilder>
                 ),
             respectSystemTextScale: widget.respectSystemTextScale,
             orientationAware: widget.orientationAware,
+            foldableAware: widget.foldableAware,
+            splitScreenAware: widget.splitScreenAware,
           ));
 
           return SizedBox(

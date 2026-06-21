@@ -13,6 +13,8 @@ class MyApp extends StatelessWidget {
     return SfsInitBuilder(
       respectSystemTextScale: true,
       orientationAware: true,
+      foldableAware: true,
+      splitScreenAware: true,
       mobileSize: const Size(360, 650),
       tabletSize: const Size(481, 890),
       desktopSize: const Size(1420, 820),

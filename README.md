@@ -45,6 +45,8 @@ class MyApp extends StatelessWidget {
      desktopSize: const Size(1420, 820),   // Baseline desktop scope
      respectSystemTextScale: true,         // Allows phone accessibility to scale text
      orientationAware: true,               // Safely calculates sideways screen dimensions
+     foldableAware: true,                  // Safely calculates unfolded screen dimensions #Google Pixel 10 Fold
+     splitScreenAware: true,               // Safely calculates split screen dimensions #Google Pixel 10 Fold
      builder: (context, child) {
        return MaterialApp(
          title: 'flutter_sfs App',

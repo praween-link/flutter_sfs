@@ -66,8 +66,8 @@ class HomeScreen extends StatelessWidget {
               color: Colors.blue,
               borderRadius: BorderRadius.circular(18.r),
             ),
-            height: 100.v(m: 100, t: 150, d: 200),
-            width: 100.w,
+            height: 100.fh(t: 150, d: 200),
+            width: 100.fw(t: 150, d: 200),
             child: const Center(
                 child: Text("Box", style: TextStyle(color: Colors.white))),
           ),

@@ -14,7 +14,7 @@ class SFS {
   static late SfsCal _fsc;
 
   /// Initializes the foundational mapping engine dynamically utilizing config [SizeRange].
-  static init(SizeRange sizeRange) {
+  static void init(SizeRange sizeRange) {
     _sizeRange = sizeRange;
     _fsc = SfsCal(sizeRange: SFS._sizeRange);
   }
@@ -92,6 +92,26 @@ class SFS {
     }
   }
 
+  /// New width with multi-screen support
+  static double wMulti(num v, {double? t, double? d}) {
+    if (_sizeRange != null) {
+      return _fsc._getWidthMulti(v.toDouble(), mq?.size.width ?? 0.0,
+          t: t, d: d);
+    } else {
+      throw Exception("First you required to wrap MaterialApp with 'SFS'.");
+    }
+  }
+
+  /// New height with multi-screen support
+  static double hMulti(num v, {double? t, double? d}) {
+    if (_sizeRange != null) {
+      return _fsc._getHeightMulti(v.toDouble(), mq?.size.width ?? 0.0,
+          t: t, d: d);
+    } else {
+      throw Exception("First you required to wrap MaterialApp with 'SFS'.");
+    }
+  }
+
   /// Get current screen type (m, t, or d)
   static String currentScreenType() {
     if (_sizeRange != null) {
@@ -129,7 +149,7 @@ class SfsCal {
   late Range defDesktopSize = Range(min: 1280, max: 1920);
 
   ///
-  initRun() {
+  void initRun() {
     _scrMin = sizeRange!.screenMinSize ?? const Size(320, 560);
     _scrMax = sizeRange!.screenMaxSize ?? const Size(1920, 1080);
     // mobile
@@ -162,11 +182,41 @@ class SfsCal {
   }
 
   double _getWidth(double v, double widthValue) {
-    return v * (_getEffectiveWidth(widthValue) / _mobileCurr.width);
+    String type = _currentScreenType();
+    double baseWidth = type == 'd'
+        ? _desktopCurr.width
+        : (type == 't' ? _tabletCurr.width : _mobileCurr.width);
+    return v * (_getEffectiveWidth(widthValue) / baseWidth);
   }
 
   double _getHeight(double v, double heightValue) {
-    return v * (_getEffectiveWidth(heightValue) / _mobileCurr.height);
+    String type = _currentScreenType();
+    double baseHeight = type == 'd'
+        ? _desktopCurr.height
+        : (type == 't' ? _tabletCurr.height : _mobileCurr.height);
+    return v * (_getEffectiveWidth(heightValue) / baseHeight);
+  }
+
+  double _getWidthMulti(double v, double widthValue, {double? t, double? d}) {
+    String type = _currentScreenType();
+    double baseWidth = type == 'd'
+        ? _desktopCurr.width
+        : (type == 't' ? _tabletCurr.width : _mobileCurr.width);
+    double value = v;
+    if (type == 't' && t != null) value = t;
+    if (type == 'd' && d != null) value = d;
+    return value * (_getEffectiveWidth(widthValue) / baseWidth);
+  }
+
+  double _getHeightMulti(double v, double heightValue, {double? t, double? d}) {
+    String type = _currentScreenType();
+    double baseHeight = type == 'd'
+        ? _desktopCurr.height
+        : (type == 't' ? _tabletCurr.height : _mobileCurr.height);
+    double value = v;
+    if (type == 't' && t != null) value = t;
+    if (type == 'd' && d != null) value = d;
+    return value * (_getEffectiveWidth(heightValue) / baseHeight);
   }
 
   /// =======================================================================

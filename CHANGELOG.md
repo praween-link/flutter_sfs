@@ -40,3 +40,7 @@
   - `respectSystemTextScale` for accessibility support  
   - `orientationAware` for better dimension handling  
 - Code optimizations and performance improvements  
+
+## 1.2.1
+- Added `.fw()` and `.fh()` extensions to define explicit sizes for tablet (`t`) and desktop (`d`) alongside the mobile baseline.
+- Fixed `16.w` and `16.h` to properly calculate relative to the current device's baseline dimensions (tablet/desktop) rather than forcing everything through the mobile screen proportion.

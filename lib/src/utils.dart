@@ -42,6 +42,14 @@ extension CardSizeExtension on num {
   Widget get hbox => SizedBox(height: SFS.h(this));
 }
 
+extension FlexibleSizeExtension on num {
+  /// Flexible width extension with explicit tablet [t] and desktop [d] sizes
+  double fw({double? t, double? d}) => SFS.wMulti(this, t: t, d: d);
+
+  /// Flexible height extension with explicit tablet [t] and desktop [d] sizes
+  double fh({double? t, double? d}) => SFS.hMulti(this, t: t, d: d);
+}
+
 /// =======================================================================
 /// Configuration parameters defining the boundaries for layout scaling.
 class SizeRange {

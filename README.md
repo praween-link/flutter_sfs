@@ -91,7 +91,9 @@ Here are all the powerful `num` extensions available instantly:
 |-----------|---------|-------------|
 | **`16.s`** | `double` | Automatic auto-scaled **font size**. |
 | **`16.w`** | `double` | Auto-scaled screen **width / radius**. |
+| **`16.fw(t, d)`** | `double` | Scaled **width** with explicit tablet/desktop size. |
 | **`16.h`** | `double` | Auto-scaled screen **height**. |
+| **`16.fh(t, d)`** | `double` | Scaled **height** with explicit tablet/desktop size. |
 | **`16.p`** | `EdgeInsets` | Scaled `EdgeInsets.all()`. |
 | **`16.ph`** | `EdgeInsets` | Scaled `EdgeInsets.symmetric(horizontal: 16.w)`. |
 | **`16.pv`** | `EdgeInsets` | Scaled `EdgeInsets.symmetric(vertical: 16.h)`. |
@@ -115,6 +117,13 @@ Sometimes, you just want to completely skip math and hardcode layout responses p
 ```dart
 // Returns 100 on Mobile, 150 on Tablet, 200 on Desktop universally
 Container(height: 100.v(m: 100, t: 150, d: 200));
+```
+
+**Explicit Dimension Constraints `.fw()` and `.fh()`**
+Similar to `.v()`, but specifically for width/height scaling where you can fallback to the auto-scaled dimension if the tablet/desktop explicit size isn't provided:
+```dart
+// Auto-scales width from 100 on mobile, but uses exactly 150 on tablet and 200 on desktop
+Container(width: 100.fw(t: 150, d: 200));
 ```
 
 

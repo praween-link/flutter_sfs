@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2
+- Fixed scaling on unfolded foldables: `_getEffectiveWidth` now checks the foldable case before the orientation-aware branch and returns half the longest side, so scaled values stay consistent across portrait and landscape
+
 ## 0.0.1
 - Manage text scaling according to screen size  
 - Support dynamic text font size ranges  
@@ -46,3 +49,6 @@
 - `foldableAware` config on `SfsInitBuilder` — clamps scaling to half the height when an unfolded foldable is detected (e.g. Pixel Fold 9 / Pixel Fold 10 / Samsung Foldable)  
 - `splitScreenAware` config on `SfsInitBuilder` — clamps scaling when the app runs in split-screen / multi-window  
 - Layout now also recalculates when the display size changes (e.g. entering/leaving split-screen), not just on window-size changes  
+
+### Fixed
+- Fixed inconsistent scaling on unfolded foldables when rotating between portrait and landscape

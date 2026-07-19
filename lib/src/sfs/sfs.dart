@@ -155,16 +155,19 @@ class SfsCal {
 
   /// ======== Calculation of width and height ==============================
   double _getEffectiveWidth(double actualWidth) {
-    if (sizeRange?.orientationAware == true &&
+    if (isUnfoldedFoldable()) {
+      // Half the longest side, so the value stays identical in portrait and
+      // landscape — must be checked before the orientation branch, which
+      // would otherwise return the full shortest side on rotation.
+      final size = mq?.size ?? Size.zero;
+      return size.longestSide / 2;
+    } else if (sizeRange?.orientationAware == true &&
         mq?.orientation == Orientation.landscape) {
       double hX = mq?.size.height ?? 0.0;
       return actualWidth > hX ? hX : actualWidth;
     } else if (isSplitScreen()) {
       double hX2 = (mq?.size.height ?? 0.0) / 2;
       return actualWidth > hX2 ? hX2 : actualWidth;
-    } else if (isUnfoldedFoldable()) {
-      double hX2 = (mq?.size.height ?? 0.0) / 2;
-      return hX2;
     }
     return actualWidth;
   }
